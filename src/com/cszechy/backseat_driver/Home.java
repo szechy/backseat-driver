@@ -1,22 +1,12 @@
 package com.cszechy.backseat_driver;
 
-import com.openxc.VehicleManager;
-import com.openxc.measurements.AcceleratorPedalPosition;
-import com.openxc.measurements.EngineSpeed;
-import com.openxc.measurements.FuelLevel;
-import com.openxc.measurements.IgnitionStatus;
-import com.openxc.measurements.ParkingBrakeStatus;
-import com.openxc.measurements.TransmissionGearPosition;
-import com.openxc.measurements.TurnSignalStatus;
-import com.openxc.measurements.UnrecognizedMeasurementTypeException;
-import com.openxc.measurements.VehicleSpeed;
-import com.openxc.remote.VehicleServiceException;
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -28,10 +18,22 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.openxc.VehicleManager;
+import com.openxc.measurements.AcceleratorPedalPosition;
+import com.openxc.measurements.EngineSpeed;
+import com.openxc.measurements.IgnitionStatus;
+import com.openxc.measurements.ParkingBrakeStatus;
+import com.openxc.measurements.TransmissionGearPosition;
+import com.openxc.measurements.TurnSignalStatus;
+import com.openxc.measurements.UnrecognizedMeasurementTypeException;
+import com.openxc.measurements.VehicleSpeed;
+import com.openxc.remote.VehicleServiceException;
+
 public class Home extends ActionBarActivity implements ActionBar.TabListener {
 	private ViewPager mPager;
 	private Adapter_TabsPager mPagerAdapter;
 	private ActionBar actionBar;
+	public static FragmentManager fm;
 	
     private VehicleConnection mConnection = new VehicleConnection();
 
@@ -64,7 +66,7 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
 		actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		
-        FragmentManager fm = getSupportFragmentManager();
+        fm = getSupportFragmentManager();
 		
 		mPagerAdapter = new Adapter_TabsPager(fm);
 		mPager.setAdapter(mPagerAdapter);
@@ -124,5 +126,30 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
         }
     }
     
- 
+    private final static int INTERVAL = 500; //500ms
+    Handler mHandler;
+
+    Runnable mHandlerTask = new Runnable() {
+         @Override 
+         public void run() {
+              Listen task = new Listen();
+              task.execute();
+              mHandler.postDelayed(mHandlerTask, INTERVAL);
+         }
+    };
+
+    void startRepeatingTask() { mHandlerTask.run(); }
+    void stopRepeatingTask() { mHandler.removeCallbacks(mHandlerTask); }
+	
+    private class Listen extends AsyncTask <Void, Void, Void> {
+		
+		@Override
+		protected Void doInBackground(Void...params) {
+			
+			return null;
+		}
+		protected void onProgressUpdate(Void...progress) {  }
+		@Override
+		protected void onPostExecute(Void result) { }
+	}
 }

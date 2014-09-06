@@ -23,11 +23,11 @@ public class Adapter_TabsPager extends FragmentPagerAdapter {
 		data.putInt("current_page", position+1);
         switch(position){
             case 0:
-            	Fragment_Instructions frag1 = new Fragment_Instructions();
+            	Fragment_Main frag1 = new Fragment_Main();
                 frag1.setArguments(data);
                 return frag1;
             case 1:
-            	Fragment_Instructions frag2 = new Fragment_Instructions();
+            	Fragment_Map frag2 = new Fragment_Map();
                 frag2.setArguments(data);
                 return frag2;
             case 2:
