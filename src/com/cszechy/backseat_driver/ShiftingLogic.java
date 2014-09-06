@@ -9,6 +9,7 @@ public class ShiftingLogic {
 	private boolean[] shifter;
 	private int clutchThreshold, rollingSpeed, maxSuggestRPM, minSuggestRPM;
 	private int prevGear;
+	private String nextAction;
 	
 	public ShiftingLogic(CarDataPacket cardata) {
 		this.cardata = cardata;
@@ -27,6 +28,7 @@ public class ShiftingLogic {
 		this.maxSuggestRPM = 2100;
 		this.minSuggestRPM = 600;
 		this.rollingSpeed = 5;
+		this.nextAction = "";
 	}
 	
 	public void setClutchThreshold(int threshold) {
@@ -45,8 +47,8 @@ public class ShiftingLogic {
 		this.rollingSpeed = speed;
 	}
 	
-	private void clutch(int val) {
-		this.clutch = (int)this.cardata.getClutchPedalPos()==val;
+	private void clutch(boolean val) {
+		this.clutch = val;
 	}
 	
 	private void accelerator(boolean val) {
@@ -99,73 +101,85 @@ public class ShiftingLogic {
 					//if it's time to upshift
 					if (this.cardata.getRPM()>=this.maxSuggestRPM) {
 						//if clutch is pressed in
-						if (this.cardata.getClutchPedalPos()>this.clutchThreshold) {
+						if (this.cardata.getClutchPedalPos()) {
 							//if user has upshifted already
 							if (convertEnum(this.cardata.getGear())>this.prevGear) {
-								clutch(this.clutchThreshold);
+								clutch(false);
 								accelerator(false);
+								this.nextAction="Release the clutch";
 							} else {	//if user has not upshifted already
-								clutch(100);
+								clutch(true);
 								accelerator(false);
 								shifter(this.prevGear+1);
+								this.nextAction="Shift to the next gear";
 							}							
 						} else {	//if clutch is not pressed in 
-							clutch(0);
+							clutch(false);
 							accelerator(true);
+							this.nextAction="Begin to accelerate";
 						}
 					//if close to stalling
 					} else if (this.cardata.getRPM()<=this.minSuggestRPM) {
 						//if clutch is pressed in
-						if (this.cardata.getClutchPedalPos()>this.clutchThreshold) {
+						if (this.cardata.getClutchPedalPos()) {
 							//if user has downshifted already
 							if (convertEnum(this.cardata.getGear())<this.prevGear) {
-								clutch(this.clutchThreshold);
+								clutch(false);
 								accelerator(true);
+								this.nextAction="Release the clutch";
 							} else {	//if user has not downshifted already
-								clutch(100);
+								clutch(true);
 								accelerator(false);
 								shifter(this.prevGear-1);
+								this.nextAction="Shift to the previous gear";
 							}							
 						} else {	//if clutch is not pressed in 
-							clutch(0);
+							clutch(false);
 							accelerator(true);
+							this.nextAction = "Begin to accelerate";
 						}
 					} else { //if inbetween high and low RPM ranges
 						prevGear = convertEnum(this.cardata.getGear());
+						this.nextAction = "Maintain current status";
 					}
 				} else { //If vehicle is not moving
 						//if vehicle is in first
 					if (this.cardata.getGear()==TransmissionGearPosition.GearPosition.FIRST) {
 						//If clutch is pushed in, tell the driver to do this
-						if (this.cardata.getClutchPedalPos()>this.clutchThreshold) {
-							clutch(this.clutchThreshold);
+						if (this.cardata.getClutchPedalPos()) {
+							clutch(false);
 							brake(false);
 							accelerator(false);
 							shifter(1);
+							this.nextAction = "Slowly release the clutch";
 							//if clutch is not in, instruct driver to do this
 						} else {
-							clutch(0);
+							clutch(false);
 							brake(false);
 							accelerator(true);
 							shifter(1);
+							this.nextAction = "Completely release the clutch and accelerate";
 						}
 						//If we're not in first
 					} else {
-						clutch(100);
+						clutch(true);
 						shifter(1);
 						accelerator(false);
+						this.nextAction = "Shift into first gear";
 					}
 				}
 			}
 		} else { //if engine is not running, begin running procedures
 			brake(true);
-			clutch(100);
+			clutch(true);
 			shifter(0);
 			accelerator(false);
+			this.nextAction = "Engage the clutch while in neutral";
 			//turn the key
 		}
 	}
 	
+	public String getNextDirection() { return this.nextAction; }
 	public boolean[] getShifter() { return this.shifter; }
 	public boolean getClutch() { return this.clutch; }
 	public boolean getAccelerator() { return this.accelerator; }

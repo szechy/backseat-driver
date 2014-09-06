@@ -26,7 +26,7 @@ public class VehicleConnection implements ServiceConnection {
 	
 	private VehicleManager mVehicleManager = null;
 	private double accelPedalPos = 0;
-	private double clutchPedalPos = 0;
+	private boolean clutchPedalPos = false;
 	private boolean brake = false;
 	private double rpm = 0;	//engine speed
 	private double mph = 0;	//vehicle speed

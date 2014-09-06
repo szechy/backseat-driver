@@ -27,11 +27,11 @@ public class Adapter_TabsPager extends FragmentPagerAdapter {
                 frag1.setArguments(data);
                 return frag1;
             case 1:
-            	Fragment_Map frag2 = new Fragment_Map();
+            	Fragment_Instructions frag2 = new Fragment_Instructions();
                 frag2.setArguments(data);
                 return frag2;
             case 2:
-            	Fragment_Instructions frag3 = new Fragment_Instructions();
+            	Fragment_Map frag3 = new Fragment_Map();
                 frag3.setArguments(data);
                 return frag3;
             	

@@ -2,9 +2,9 @@
 <resources>
 
     <string name="app_name">Backseat Driver</string>
-    <string name="tab1">Instructional</string>
-    <string name="tab2">Navigation</string>
-    <string name="tab3">Social</string>
+    <string name="tab1">Home</string>
+    <string name="tab2">Driver</string>
+    <string name="tab3">Map</string>
     <string name="action_settings">Settings</string>
 
 </resources>

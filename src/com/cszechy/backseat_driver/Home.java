@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.openxc.VehicleManager;
 
@@ -130,13 +131,14 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
     void stopRepeatingTask() { mHandler.removeCallbacks(mHandlerTask); }
 	
     private class Listen extends AsyncTask <Void, Boolean, boolean[]> {
-		
+		private String nextAction;
 		@Override
 		protected boolean[] doInBackground(Void...params) {
 			CarDataPacket cardata = mConnection.getAllData();
 			ShiftingLogic shifter = new ShiftingLogic(cardata);
 			shifter.determineAction();
 			publishProgress(shifter.getAccelerator(),shifter.getBrake(),shifter.getClutch());
+			nextAction = shifter.getNextDirection();
 			return shifter.getShifter();
 		}
 		protected void onProgressUpdate(Boolean...progress) {
@@ -153,6 +155,8 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
 		
 		@Override
 		protected void onPostExecute(boolean[] results) { 
+			TextView nextActionTV = (TextView)findViewById(R.id.nextAction);
+			nextActionTV.setText(nextAction);
 			ImageView shiftImage = (ImageView)findViewById(R.id.shifter);
 			if (results[0]) shiftImage.setImageResource(R.drawable.gearnuetral_lit);
 			if (results[1]) shiftImage.setImageResource(R.drawable.gearfirst_lit);

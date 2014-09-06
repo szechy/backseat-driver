@@ -6,7 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,7 +21,7 @@ public class Fragment_Map extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 	    if (container == null) return null;
-	    view = (RelativeLayout) inflater.inflate(R.layout.fragment_map, container, false);
+	    view = (LinearLayout) inflater.inflate(R.layout.fragment_map, container, false);
         setUpMapIfNeeded();
 	    return view;
 	}
@@ -58,5 +58,6 @@ public class Fragment_Map extends Fragment {
 	        Home.fm.beginTransaction().remove(Home.fm.findFragmentById(R.id.location_map)).commit();
 	        mMap = null;
 	    }
-}
+	}
+	
 }
