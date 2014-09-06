@@ -1091,7 +1091,7 @@ containing a value of this type.
         public static final int action_menu_divider=0x7f050016;
         public static final int action_menu_presenter=0x7f050017;
         public static final int action_mode_close_button=0x7f050024;
-        public static final int action_settings=0x7f05003e;
+        public static final int action_settings=0x7f05003d;
         public static final int activity_chooser_view_content=0x7f050025;
         public static final int always=0x7f05000b;
         public static final int beginning=0x7f050011;
@@ -1130,7 +1130,6 @@ containing a value of this type.
         public static final int search_plate=0x7f050036;
         public static final int search_src_text=0x7f050037;
         public static final int search_voice_btn=0x7f05003b;
-        public static final int section_label=0x7f05003d;
         public static final int shortcut=0x7f05002e;
         public static final int showCustom=0x7f050007;
         public static final int showHome=0x7f050004;
@@ -1195,8 +1194,7 @@ containing a value of this type.
         public static final int abc_search_view=0x7f030016;
         public static final int abc_simple_decor=0x7f030017;
         public static final int activity_home=0x7f030018;
-        public static final int fragment_home=0x7f030019;
-        public static final int support_simple_spinner_dropdown_item=0x7f03001a;
+        public static final int support_simple_spinner_dropdown_item=0x7f030019;
     }
     public static final class menu {
         public static final int home=0x7f0c0000;
@@ -1242,12 +1240,11 @@ containing a value of this type.
         /**  Description of a share target (both in the list of such or the default share button) in a ShareActionProvider (share UI). [CHAR LIMIT=NONE] 
          */
         public static final int abc_shareactionprovider_share_with_application=0x7f0a000b;
-        public static final int action_settings=0x7f0a0012;
+        public static final int action_settings=0x7f0a0011;
         public static final int app_name=0x7f0a000d;
-        public static final int hello_world=0x7f0a0011;
-        public static final int title_section1=0x7f0a000e;
-        public static final int title_section2=0x7f0a000f;
-        public static final int title_section3=0x7f0a0010;
+        public static final int tab1=0x7f0a000e;
+        public static final int tab2=0x7f0a000f;
+        public static final int tab3=0x7f0a0010;
     }
     public static final class style {
         /** 
