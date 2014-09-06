@@ -1479,15 +1479,16 @@ containing a value of this type.
         public static final int ic_plusone_small_off_client=0x7f020088;
         public static final int ic_plusone_standard_off_client=0x7f020089;
         public static final int ic_plusone_tall_off_client=0x7f02008a;
-        public static final int newlocation=0x7f02008b;
-        public static final int openxc_notification_icon_small_white=0x7f02008c;
-        public static final int picture5=0x7f02008d;
-        public static final int powered_by_google_dark=0x7f02008e;
-        public static final int powered_by_google_light=0x7f02008f;
-        public static final int previouslocation=0x7f020090;
-        public static final int settings=0x7f020091;
-        public static final int socialmedia=0x7f020092;
-        public static final int userguide=0x7f020093;
+        public static final int large_card=0x7f02008b;
+        public static final int newlocation=0x7f02008c;
+        public static final int openxc_notification_icon_small_white=0x7f02008d;
+        public static final int picture5=0x7f02008e;
+        public static final int powered_by_google_dark=0x7f02008f;
+        public static final int powered_by_google_light=0x7f020090;
+        public static final int previouslocation=0x7f020091;
+        public static final int settings=0x7f020092;
+        public static final int socialmedia=0x7f020093;
+        public static final int userguide=0x7f020094;
     }
     public static final class id {
         public static final int accelerator=0x7f080052;
@@ -1502,7 +1503,7 @@ containing a value of this type.
         public static final int action_menu_divider=0x7f080028;
         public static final int action_menu_presenter=0x7f080029;
         public static final int action_mode_close_button=0x7f080036;
-        public static final int action_settings=0x7f08005c;
+        public static final int action_settings=0x7f08005b;
         public static final int activity_chooser_view_content=0x7f080037;
         public static final int always=0x7f08001e;
         public static final int beginning=0x7f080023;
@@ -1532,15 +1533,14 @@ containing a value of this type.
         public static final int icon=0x7f08003c;
         public static final int ifRoom=0x7f08001d;
         public static final int image=0x7f080039;
-        public static final int imageButton1=0x7f080055;
-        public static final int imageButton2=0x7f080056;
-        public static final int imageButton3=0x7f080057;
-        public static final int imageButton4=0x7f080058;
-        public static final int imageButton5=0x7f080059;
         public static final int listMode=0x7f080014;
         public static final int list_item=0x7f08003b;
-        public static final int location_map=0x7f08005b;
+        public static final int location_map=0x7f08005a;
         public static final int match_parent=0x7f08000c;
+        public static final int menuItem1=0x7f080055;
+        public static final int menuItem2=0x7f080056;
+        public static final int menuItem3=0x7f080057;
+        public static final int menuItem4=0x7f080058;
         public static final int middle=0x7f080024;
         public static final int monochrome=0x7f080013;
         public static final int never=0x7f08001c;
@@ -1576,7 +1576,7 @@ containing a value of this type.
         public static final int tabMode=0x7f080015;
         public static final int terrain=0x7f080003;
         public static final int textView1=0x7f080054;
-        public static final int textView2=0x7f08005a;
+        public static final int textView2=0x7f080059;
         public static final int title=0x7f08003d;
         public static final int top_action_bar=0x7f080032;
         public static final int up=0x7f080033;
