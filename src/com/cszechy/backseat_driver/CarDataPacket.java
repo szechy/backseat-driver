@@ -6,6 +6,8 @@ import com.openxc.measurements.TurnSignalStatus;
 
 public class CarDataPacket {
 	private double accelPedalPos = 0;
+	private double clutchPedalPos = 0;
+	private boolean brake = false;
 	private double RPM = 0;
 	private IgnitionStatus.IgnitionPosition ignition = IgnitionStatus.IgnitionPosition.OFF;
 	private boolean parkStatus = false;
@@ -13,10 +15,12 @@ public class CarDataPacket {
 	private TurnSignalStatus.TurnSignalPosition turnSignal = TurnSignalStatus.TurnSignalPosition.OFF;
 	private double mph = 0;
 	
-	public CarDataPacket(double accelPedalPos, double RPM, IgnitionStatus.IgnitionPosition ignition,
+	public CarDataPacket(double accelPedalPos, double clutchPedalPos, boolean brake, double RPM, IgnitionStatus.IgnitionPosition ignition,
 			boolean parkStatus, TransmissionGearPosition.GearPosition gearPos, 
 			TurnSignalStatus.TurnSignalPosition turnSignal, double mph) {
 		this.accelPedalPos = accelPedalPos;
+		this.clutchPedalPos = clutchPedalPos;
+		this.brake = brake;
 		this.RPM = RPM;
 		this.ignition = ignition;
 		this.parkStatus = parkStatus;
@@ -27,6 +31,14 @@ public class CarDataPacket {
 
 	public double getAccelPedalPos() {
 		return accelPedalPos;
+	}
+	
+	public double getClutchPedalPos() {
+		return clutchPedalPos;
+	}
+	
+	public boolean getBrake() {
+		return brake;
 	}
 	
 	public double getRPM() {

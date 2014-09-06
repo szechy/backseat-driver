@@ -1,24 +1,22 @@
 package com.cszechy.backseat_driver;
 
+import android.content.ComponentName;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+import android.util.Log;
+
 import com.openxc.VehicleManager;
 import com.openxc.measurements.AcceleratorPedalPosition;
+import com.openxc.measurements.BrakePedalStatus;
 import com.openxc.measurements.EngineSpeed;
 import com.openxc.measurements.IgnitionStatus;
 import com.openxc.measurements.Measurement;
-import com.openxc.measurements.Measurement.Listener;
-import com.openxc.measurements.TransmissionGearPosition.GearPosition;
 import com.openxc.measurements.ParkingBrakeStatus;
 import com.openxc.measurements.TransmissionGearPosition;
 import com.openxc.measurements.TurnSignalStatus;
 import com.openxc.measurements.UnrecognizedMeasurementTypeException;
 import com.openxc.measurements.VehicleSpeed;
-import com.openxc.measurements.IgnitionStatus.IgnitionPosition;
 import com.openxc.remote.VehicleServiceException;
-
-import android.content.ComponentName;
-import android.content.ServiceConnection;
-import android.os.IBinder;
-import android.util.Log;
 
 public class VehicleConnection implements ServiceConnection {
 	
@@ -28,6 +26,8 @@ public class VehicleConnection implements ServiceConnection {
 	
 	private VehicleManager mVehicleManager = null;
 	private double accelPedalPos = 0;
+	private double clutchPedalPos = 0;
+	private boolean brake = false;
 	private double rpm = 0;	//engine speed
 	private double mph = 0;	//vehicle speed
 	private IgnitionStatus.IgnitionPosition igniteStatus = IgnitionStatus.IgnitionPosition.OFF;
@@ -116,9 +116,9 @@ public class VehicleConnection implements ServiceConnection {
 	}
 	
 	public void printOutDebugSensors() {
-		Log.d("AccelPedal", "position: " + mAccelPedal);
+		Log.d("AccelPedal", "position: " + accelPedalPos);
 		Log.d("EngineSpeed", "RPM: " + rpm);
-		Log.d("IgnitionStatus", "status: " + mIgnition);
+		Log.d("IgnitionStatus", "status: " + igniteStatus);
 		Log.d("ParkingBrakeStatus", "parkStatus: " + parkStatus);
 		Log.d("TransmissionGearPosition", "gearPosition: " + gearPos);
 		Log.d("TurnSignalStatus", "signalStatus: " + turnSignal);
@@ -183,9 +183,16 @@ public class VehicleConnection implements ServiceConnection {
 			VehicleConnection.this.mph = vehicleSpeed.getValue().doubleValue();
 		}
 	};
+	private BrakePedalStatus.Listener mBrake = new BrakePedalStatus.Listener() {	
+		@Override
+		public void receive(Measurement measurement) {
+			BrakePedalStatus brakePedal = (BrakePedalStatus)measurement;
+			VehicleConnection.this.brake = brakePedal.getValue().booleanValue();
+		}
+	};
 	
 	public CarDataPacket getAllData() {
-		return new CarDataPacket(accelPedalPos, rpm, igniteStatus, 
+		return new CarDataPacket(accelPedalPos, clutchPedalPos, brake, rpm, igniteStatus, 
 				parkStatus, gearPos, turnSignal, mph);
 	}
 }

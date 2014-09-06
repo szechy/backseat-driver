@@ -8,7 +8,7 @@ package com.openxc;
 
 public final class R {
 	public static final class drawable {
-		public static final int openxc_notification_icon_small_white = 0x7f020074;
+		public static final int openxc_notification_icon_small_white = 0x7f020088;
 	}
 	public static final class string {
 		public static final int bluetooth_checkbox_key = 0x7f050008;
