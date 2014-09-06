@@ -33,50 +33,7 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
 	private Adapter_TabsPager mPagerAdapter;
 	private ActionBar actionBar;
 	
-	private VehicleManager mVehicleManager = null;
-	private MyAcceleratorPedalPosition mAccelPedal = new MyAcceleratorPedalPosition();
-	private MyEngineSpeedListener mRPM = new MyEngineSpeedListener();
-	private MyIgnitionStatus mIgnition = new MyIgnitionStatus();
-	private MyParkingBrakeStatus mParkStatus = new MyParkingBrakeStatus();
-	private MyTransmissionGearPosition mGear = new MyTransmissionGearPosition();
-	private MyTurnSignalStatus mSignal = new MyTurnSignalStatus();
-	private MyVehicleSpeed mSpeed = new MyVehicleSpeed();
-	
-    private ServiceConnection mConnection = new ServiceConnection() {
-        // Called when the connection with the VehicleManager service is established, i.e. bound.
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.i("HomeActivity", "Bound to VehicleManager");
-            // When the VehicleManager starts up, we store a reference to it
-            // here in "mVehicleManager" so we can call functions on it
-            // elsewhere in our code.
-            mVehicleManager = ((VehicleManager.VehicleBinder) service)
-                    .getService();
-
-            // We want to receive updates whenever the EngineSpeed changes. We
-            // have an EngineSpeed.Listener (see above, mSpeedListener) and here
-            // we request that the VehicleManager call its receive() method
-            // whenever the EngineSpeed changes
-            try {
-            	mVehicleManager.addListener(AcceleratorPedalPosition.class, mAccelPedal);
-            	mVehicleManager.addListener(EngineSpeed.class, mRPM);
-            	mVehicleManager.addListener(IgnitionStatus.class, mIgnition);
-            	mVehicleManager.addListener(ParkingBrakeStatus.class, mParkStatus);
-            	mVehicleManager.addListener(TransmissionGearPosition.class, mGear);
-            	mVehicleManager.addListener(TurnSignalStatus.class, mSignal);
-                mVehicleManager.addListener(VehicleSpeed.class, mSpeed);
-            } catch (VehicleServiceException e) {
-                e.printStackTrace();
-            } catch (UnrecognizedMeasurementTypeException e) {
-                e.printStackTrace();
-            }
-        }
-        
-		@Override
-		public void onServiceDisconnected(ComponentName name) {
-            Log.w("HomeActivity", "VehicleManager Service  disconnected unexpectedly");
-            mVehicleManager = null;
-		}
-    };
+    private VehicleConnection mConnection = new VehicleConnection();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -94,14 +51,9 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
+		mConnection.printOutDebugSensors();
 		if (id == R.id.action_settings) {
-			Log.d("AccelPedal", "position: " + mAccelPedal.getPosition());
-			Log.d("EngineSpeed", "RPM: " + mRPM.getRPM());
-			Log.d("IgnitionStatus", "status: " + mIgnition.getStatus());
-			Log.d("ParkingBrakeStatus", "parkStatus: " + mParkStatus.getParkingBrakeOn());
-			Log.d("TransmissionGearPosition", "gearPosition: " + mGear.getPosition());
-			Log.d("TurnSignalStatus", "signalStatus: " + mSignal.getPosition());
-			Log.d("VehicleSpeed", "speed: " + mSpeed.getSpeed());
+			//mConnection.printOutDebugSensors();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -150,7 +102,7 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
         // When the activity starts up or returns from the background,
         // re-connect to the VehicleManager so we can receive updates.
         Log.i("HomeActivity", "onResume");
-        if(mVehicleManager == null) {
+        if(mConnection.getVehicleManager() == null) {
             Intent intent = new Intent(this, VehicleManager.class);
             bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         }
@@ -162,24 +114,15 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
         Log.i("HomeActivity", "onPause");
         // When the activity goes into the background or exits, we want to make
         // sure to unbind from the service to avoid leaking memory
-        if(mVehicleManager != null) {
+        if(mConnection.getVehicleManager() != null) {
             Log.i("HomeActivity", "Unbinding from Vehicle Manager");
-            try {
-                // Remember to remove your listeners, in typical Android
-                // fashion.
-            	mVehicleManager.removeListener(AcceleratorPedalPosition.class, mAccelPedal);
-            	mVehicleManager.removeListener(EngineSpeed.class, mRPM);
-            	mVehicleManager.removeListener(IgnitionStatus.class, mIgnition);
-            	mVehicleManager.removeListener(ParkingBrakeStatus.class, mParkStatus);
-            	mVehicleManager.removeListener(TransmissionGearPosition.class, mGear);
-            	mVehicleManager.removeListener(TurnSignalStatus.class, mSignal);
-                mVehicleManager.removeListener(VehicleSpeed.class, mSpeed);
-            } catch (VehicleServiceException e) {
-                e.printStackTrace();
-            }
+            // Remember to remove your listeners, in typical Android
+			// fashion.
+			mConnection.removeAllListeners();
             unbindService(mConnection);
-            mVehicleManager = null;
+            mConnection.setVehicleManager(null);
         }
     }
-	
+    
+ 
 }
