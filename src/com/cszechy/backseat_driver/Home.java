@@ -14,6 +14,7 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
 	private ViewPager mPager;
 	private Adapter_TabsPager mPagerAdapter;
 	private ActionBar actionBar;
+	public static FragmentManager fm;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +43,7 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
 		actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		
-        FragmentManager fm = getSupportFragmentManager();
+        fm = getSupportFragmentManager();
 		
 		mPagerAdapter = new Adapter_TabsPager(fm);
 		mPager.setAdapter(mPagerAdapter);
