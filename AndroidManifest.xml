@@ -28,6 +28,8 @@
 		<meta-data
 	    	android:name="com.google.android.maps.v2.API_KEY"
 	    	android:value="AIzaSyD4d-0jHYi6tDnWCr1tiumDi12iFGWFQXM"/>
+		
+   	 	<service android:name="com.openxc.VehicleManager"/>
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
