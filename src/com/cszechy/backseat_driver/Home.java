@@ -1,6 +1,7 @@
 package com.cszechy.backseat_driver;
 
-import android.app.Activity;
+import java.util.Locale;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -17,19 +18,17 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.openxc.VehicleManager;
-import com.openxc.measurements.BrakePedalStatus.BrakePosition;
 
-public class Home extends ActionBarActivity implements ActionBar.TabListener, OnInitListener {
-	private TextToSpeech tts;
+public class Home extends ActionBarActivity implements TextToSpeech.OnInitListener, ActionBar.TabListener {
+>>>>>>> 27cccbfe158dca14d5e90d0b5ed9fc944a27bd08
 	private ViewPager mPager;
 	private Adapter_TabsPager mPagerAdapter;
 	private ActionBar actionBar;
 	public static FragmentManager fm;
+	private TextToSpeech tts;
 	int prevGear = 0;
 	boolean shiftingUp = false, shiftingDown = false;
 	
@@ -40,8 +39,29 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener, On
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
 		managePageNavigation();
+		tts = new TextToSpeech(this, this);
 	}
 
+    @Override
+    public void onDestroy() {
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onDestroy();
+    }
+	
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+            int result = tts.setLanguage(Locale.US);
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "This Language is not supported");
+            } else {
+            }
+        } else { }
+    }
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.home, menu);
@@ -142,6 +162,8 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener, On
 
     void startRepeatingTask() { mHandlerTask.run(); }
     void stopRepeatingTask() { mHandler.removeCallbacks(mHandlerTask); }
+    
+    private String prevSaying;
 	
     private class Listen extends AsyncTask <Void, Boolean, int[]> {
 		private String nextAction;
@@ -159,6 +181,10 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener, On
 			clutch = shifter.getClutch();
 			shift = shifter.getShifter();
 			nextAction = shifter.getNextDirection();
+			if (!nextAction.equals(prevSaying)){
+				tts.stop();
+				tts.speak(nextAction, TextToSpeech.QUEUE_FLUSH, null);
+			}
 			prevGear = shift;
 			shiftingDown = shifter.getShiftDown();
 			shiftingUp = shifter.getShiftUp();
