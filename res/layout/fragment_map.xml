@@ -6,16 +6,39 @@
     
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_weight="0.2"
+        android:layout_weight="0.3"
+        android:paddingTop="10sp"
+    	android:orientation="vertical"
         android:layout_height="match_parent" >
 
+
+    	<TextView
+	        android:id="@+id/loc"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="fill_horizontal"
+	        android:hint="Enter location"
+	        android:textSize="14sp"
+	        android:completionThreshold="3" />
+
+
+	    <Button
+	        android:id="@+id/load_directions"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingTop="10sp"
+	        android:textSize="12sp"
+	        android:layout_gravity="fill_horizontal"
+	        android:onClick="calcRoute"
+	        android:text="Calculate Route" />
+        
     </LinearLayout>
-    
+
     <fragment
         android:id="@+id/location_map"
         android:layout_width="0dp"
-        android:layout_weight="0.8"
         android:layout_height="match_parent"
+        android:layout_weight="0.7"
         class="com.google.android.gms.maps.SupportMapFragment" />
 
 </LinearLayout>
