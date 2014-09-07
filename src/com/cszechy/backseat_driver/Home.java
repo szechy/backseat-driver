@@ -27,6 +27,8 @@ public class Home extends ActionBarActivity implements TextToSpeech.OnInitListen
 	private ActionBar actionBar;
 	public static FragmentManager fm;
 	private TextToSpeech tts;
+	int prevGear = 0;
+	boolean shiftingUp = false, shiftingDown = false;
 	
     private VehicleConnection mConnection = new VehicleConnection();
 
@@ -144,7 +146,7 @@ public class Home extends ActionBarActivity implements TextToSpeech.OnInitListen
         stopRepeatingTask();
     }
     
-    private final static int INTERVAL = 500; //500ms
+    private final static int INTERVAL = 1000; //1000ms
     Handler mHandler = new Handler();
 
     Runnable mHandlerTask = new Runnable() {
@@ -161,50 +163,62 @@ public class Home extends ActionBarActivity implements TextToSpeech.OnInitListen
     
     private String prevSaying;
 	
-    private class Listen extends AsyncTask <Void, Boolean, boolean[]> {
+    private class Listen extends AsyncTask <Void, Boolean, int[]> {
 		private String nextAction;
 		private boolean accel, brake, clutch;
+		private int shift = 0;
 		
 		@Override
-		protected boolean[] doInBackground(Void...params) {
+		protected int[] doInBackground(Void...params) {
 			CarDataPacket cardata = mConnection.getAllData();
-			ShiftingLogic shifter = new ShiftingLogic(cardata);
+			ShiftingLogic shifter = new ShiftingLogic(cardata, prevGear, shiftingUp, shiftingDown);
 			shifter.printParams();
 			shifter.determineAction();
 			accel = shifter.getAccelerator();
 			brake = shifter.getBrake();
 			clutch = shifter.getClutch();
+			shift = shifter.getShifter();
 			nextAction = shifter.getNextDirection();
 			if (!nextAction.equals(prevSaying)){
 				tts.stop();
 				tts.speak(nextAction, TextToSpeech.QUEUE_FLUSH, null);
 			}
-			return shifter.getShifter();
+			prevGear = shift;
+			shiftingDown = shifter.getShiftDown();
+			shiftingUp = shifter.getShiftUp();
+			boolean[] passAlong = {accel, brake, clutch};
+			onProgressUpdate(passAlong);
+			int[] shifterPlusOne = {shifter.getShifter(), 1};
+			return shifterPlusOne;
 		}
 
-		protected void onProgressUpdate(Boolean...progress) {
-			ImageView accelImage = (ImageView)findViewById(R.id.accelerator);
-			ImageView brakeImage = (ImageView)findViewById(R.id.brake);
-			ImageView clutchImage = (ImageView)findViewById(R.id.clutch);
-			if (accel) accelImage.setImageResource(R.drawable.gas_activated);
-			else accelImage.setImageResource(R.drawable.gas);
-			if (brake) brakeImage.setImageResource(R.drawable.clutch_activated);
-			else brakeImage.setImageResource(R.drawable.clutch);
-			if (clutch) clutchImage.setImageResource(R.drawable.clutch_activated);
-			else clutchImage.setImageResource(R.drawable.clutch);
+		protected void onProgressUpdate(boolean... progress) {
+			Log.d("Accel, Brake, Clutch", "" + accel + ", " + brake + ", " + clutch);
+			runOnUiThread(new Runnable() {
+			     @Override
+			     public void run() {
+			    	((Fragment_Instructions)mPagerAdapter.getRegisteredFragment(1)).accel(accel);
+					((Fragment_Instructions)mPagerAdapter.getRegisteredFragment(1)).brake(brake);
+					((Fragment_Instructions)mPagerAdapter.getRegisteredFragment(1)).clutch(clutch);
+			    }
+			});
 		}
 		
 		@Override
-		protected void onPostExecute(boolean[] results) { 
+		protected void onPostExecute(final int[] shifterPlusOne) { 
+			runOnUiThread(new Runnable() {
+			     @Override
+			     public void run() {
 			((Fragment_Instructions) mPagerAdapter.getRegisteredFragment(1)).data(nextAction);
-			ImageView shiftImage = (ImageView)findViewById(R.id.shifter);
-			if (results[0]) shiftImage.setImageResource(R.drawable.gearnuetral_lit);
+			((Fragment_Instructions) mPagerAdapter.getRegisteredFragment(1)).shifter(shifterPlusOne[0]);
+			     }});
+			/*if (results[0]) shiftImage.setImageResource(R.drawable.gearnuetral_lit);
 			if (results[1]) shiftImage.setImageResource(R.drawable.gearfirst_lit);
 			if (results[2]) shiftImage.setImageResource(R.drawable.gearsecond_lit);
 			if (results[3]) shiftImage.setImageResource(R.drawable.gearthird_lit);
 			if (results[4]) shiftImage.setImageResource(R.drawable.gearforth_lit);
 			if (results[5]) shiftImage.setImageResource(R.drawable.gearfifth_lit);
-			if (results[6]) shiftImage.setImageResource(R.drawable.gearsixth_lit);
+			if (results[6]) shiftImage.setImageResource(R.drawable.gearsixth_lit);*/
 		}
 	}
 }

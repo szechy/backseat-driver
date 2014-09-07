@@ -9,6 +9,7 @@ import com.openxc.VehicleManager;
 import com.openxc.measurements.AcceleratorPedalPosition;
 import com.openxc.measurements.BrakePedalStatus;
 import com.openxc.measurements.BrakePedalStatus.BrakePosition;
+import com.openxc.measurements.ClutchPedalStatus;
 import com.openxc.measurements.EngineSpeed;
 import com.openxc.measurements.IgnitionStatus;
 import com.openxc.measurements.Measurement;
@@ -55,6 +56,7 @@ public class VehicleConnection implements ServiceConnection {
     	mVehicleManager.addListener(EngineSpeed.class, mRPM);
     	mVehicleManager.addListener(IgnitionStatus.class, mIgnition);
     	mVehicleManager.addListener(ParkingBrakeStatus.class, mParkStatus);
+    	mVehicleManager.addListener(ClutchPedalStatus.class, mClutch);
     	//mVehicleManager.addListener(TransmissionGearPosition.class, mGear);
     	mVehicleManager.addListener(TurnSignalStatus.class, mSignal);
         mVehicleManager.addListener(VehicleSpeed.class, mSpeed);
@@ -79,6 +81,7 @@ public class VehicleConnection implements ServiceConnection {
         	mVehicleManager.removeListener(IgnitionStatus.class, mIgnition);
         	mVehicleManager.removeListener(ParkingBrakeStatus.class, mParkStatus);
 			//mVehicleManager.removeListener(TransmissionGearPosition.class, mGear);
+        	mVehicleManager.removeListener(ClutchPedalStatus.class, mClutch);
 			mVehicleManager.removeListener(TurnSignalStatus.class, mSignal);
 	        mVehicleManager.removeListener(VehicleSpeed.class, mSpeed);
 		} catch (VehicleServiceException e) {
@@ -96,6 +99,7 @@ public class VehicleConnection implements ServiceConnection {
         	mVehicleManager.addListener(IgnitionStatus.class, mIgnition);
         	mVehicleManager.addListener(ParkingBrakeStatus.class, mParkStatus);
         	//mVehicleManager.addListener(TransmissionGearPosition.class, mGear);
+        	mVehicleManager.addListener(ClutchPedalStatus.class, mClutch);
 			mVehicleManager.addListener(TurnSignalStatus.class, mSignal);
 			mVehicleManager.addListener(VehicleSpeed.class, mSpeed);
 		} catch (VehicleServiceException e) {
@@ -189,6 +193,14 @@ public class VehicleConnection implements ServiceConnection {
 		public void receive(Measurement measurement) {
 			BrakePedalStatus brakePedal = (BrakePedalStatus)measurement;
 			VehicleConnection.this.brake = brakePedal.getValue().enumValue();
+		}
+	};
+	
+	private ClutchPedalStatus.Listener mClutch = new ClutchPedalStatus.Listener() {	
+		@Override
+		public void receive(Measurement measurement) {
+			ClutchPedalStatus clutchPedal = (ClutchPedalStatus)measurement;
+			VehicleConnection.this.clutchPedalPos = clutchPedal.getValue().booleanValue();
 		}
 	};
 	
