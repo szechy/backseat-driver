@@ -1,11 +1,13 @@
 package com.cszechy.backseat_driver;
 
-import android.app.Activity;
+import java.util.Locale;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
@@ -15,18 +17,16 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.openxc.VehicleManager;
-import com.openxc.measurements.BrakePedalStatus.BrakePosition;
 
-public class Home extends ActionBarActivity implements ActionBar.TabListener {
+public class Home extends ActionBarActivity implements TextToSpeech.OnInitListener, ActionBar.TabListener {
 	private ViewPager mPager;
 	private Adapter_TabsPager mPagerAdapter;
 	private ActionBar actionBar;
 	public static FragmentManager fm;
+	private TextToSpeech tts;
 	
     private VehicleConnection mConnection = new VehicleConnection();
 
@@ -35,8 +35,29 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
 		managePageNavigation();
+		tts = new TextToSpeech(this, this);
 	}
 
+    @Override
+    public void onDestroy() {
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onDestroy();
+    }
+	
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+            int result = tts.setLanguage(Locale.US);
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "This Language is not supported");
+            } else {
+            }
+        } else { }
+    }
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.home, menu);
@@ -137,6 +158,8 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
 
     void startRepeatingTask() { mHandlerTask.run(); }
     void stopRepeatingTask() { mHandler.removeCallbacks(mHandlerTask); }
+    
+    private String prevSaying;
 	
     private class Listen extends AsyncTask <Void, Boolean, boolean[]> {
 		private String nextAction;
@@ -152,7 +175,10 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
 			brake = shifter.getBrake();
 			clutch = shifter.getClutch();
 			nextAction = shifter.getNextDirection();
-			
+			if (!nextAction.equals(prevSaying)){
+				tts.stop();
+				tts.speak(nextAction, TextToSpeech.QUEUE_FLUSH, null);
+			}
 			return shifter.getShifter();
 		}
 
