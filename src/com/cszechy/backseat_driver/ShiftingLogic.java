@@ -25,9 +25,9 @@ public class ShiftingLogic {
 		this.clutch = false;
 		this.accelerator = false;
 		this.clutchThreshold = 25;
-		this.maxSuggestRPM = 900;
-		this.minSuggestRPM = 500;
-		this.rollingSpeed = 3;
+		this.maxSuggestRPM = 1300;
+		this.minSuggestRPM = 800;
+		this.rollingSpeed = 8;
 		this.nextAction = "";
 		this.key = cardata.getIgnition();
 		this.shiftingUp = shiftingUp;
@@ -104,7 +104,7 @@ public class ShiftingLogic {
 				//if vehicle is moving
 				if (this.cardata.getMPH()>=this.rollingSpeed) {
 					//if it's time to upshift
-					if (this.cardata.getRPM()>=this.maxSuggestRPM) {
+					if ((this.cardata.getRPM()>=this.maxSuggestRPM) & (shifter < 7)) {
 						//if clutch is pressed in
 						if (this.cardata.getClutchPedalPos()) {
 							//tell user to shift up
@@ -124,7 +124,10 @@ public class ShiftingLogic {
 							this.nextAction = ("Begin accelerating");
 						}		*/
 						//if clutch is not pressed in
-						else { 
+						else {
+							//if(!shiftingUp) {
+							//	shifter(shifter+1);
+							//}
 							shiftingUp = false;
 							clutch(true);
 							accelerator(false);
@@ -147,7 +150,7 @@ public class ShiftingLogic {
 						else {	 
 							if(!shiftingDown)
 								shifter(shifter-1);
-							shiftingDown = true;
+							shiftingDown = false;
 							clutch(true);
 							brake(false);
 							accelerator(true);
@@ -161,7 +164,7 @@ public class ShiftingLogic {
 						brake(false);
 						shiftingDown = false;
 						shiftingUp = false;
-						this.nextAction = "Maintain current speed";
+						//this.nextAction = "Maintain current speed";
 					}
 				}	
 				//if vehicle is stationary 
@@ -198,7 +201,7 @@ public class ShiftingLogic {
 			clutch(true);
 			shifter(0);
 			accelerator(false);
-			this.nextAction = "Press the button, push to start.";
+			this.nextAction = "Please turn on the car, and place your feet on the clutch and brake.";
 		}
 	}
 	
@@ -226,15 +229,19 @@ public class ShiftingLogic {
 		return shiftingDown;
 	}
 	
+	public double getSpeed() {
+		return cardata.getMPH();
+	}
+	
 	public void printParams() {
-		Log.d("brake", "" + cardata.getBrake());
-		Log.d("acceleration pedal", "" + cardata.getAccelPedalPos());
+		//Log.d("brake", "" + cardata.getBrake());
+		//Log.d("acceleration pedal", "" + cardata.getAccelPedalPos());
 		Log.d("clutch", "" + cardata.getClutchPedalPos());
 		Log.d("engine speed", "" + cardata.getRPM());
 		Log.d("nextAction", "" + nextAction);
 		Log.d("road speed", "" + cardata.getMPH());
-		Log.d("parking brake", "" + cardata.getParkStatus());
-		Log.d("ignition", "" + key.toString());
+		//Log.d("parking brake", "" + cardata.getParkStatus());
+		//Log.d("ignition", "" + key.toString());
 		Log.d("shifter", "" + shifter);
 	}
 }

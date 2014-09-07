@@ -18,12 +18,12 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.openxc.VehicleManager;
 
 public class Home extends ActionBarActivity implements TextToSpeech.OnInitListener, ActionBar.TabListener {
->>>>>>> 27cccbfe158dca14d5e90d0b5ed9fc944a27bd08
 	private ViewPager mPager;
 	private Adapter_TabsPager mPagerAdapter;
 	private ActionBar actionBar;
@@ -31,6 +31,8 @@ public class Home extends ActionBarActivity implements TextToSpeech.OnInitListen
 	private TextToSpeech tts;
 	int prevGear = 0;
 	boolean shiftingUp = false, shiftingDown = false;
+	FuzzyGearLogic fuzzy = new FuzzyGearLogic(0);
+	private double speed = 0;
 	
     private VehicleConnection mConnection = new VehicleConnection();
 
@@ -148,7 +150,7 @@ public class Home extends ActionBarActivity implements TextToSpeech.OnInitListen
         stopRepeatingTask();
     }
     
-    private final static int INTERVAL = 1000; //1000ms
+    private final static int INTERVAL = 500; //1000ms
     Handler mHandler = new Handler();
 
     Runnable mHandlerTask = new Runnable() {
@@ -180,10 +182,12 @@ public class Home extends ActionBarActivity implements TextToSpeech.OnInitListen
 			brake = shifter.getBrake();
 			clutch = shifter.getClutch();
 			shift = shifter.getShifter();
+			speed = shifter.getSpeed();
 			nextAction = shifter.getNextDirection();
 			if (!nextAction.equals(prevSaying)){
 				tts.stop();
 				tts.speak(nextAction, TextToSpeech.QUEUE_FLUSH, null);
+				prevSaying = nextAction;
 			}
 			prevGear = shift;
 			shiftingDown = shifter.getShiftDown();
@@ -216,21 +220,9 @@ public class Home extends ActionBarActivity implements TextToSpeech.OnInitListen
 			     @Override
 			     public void run() {
 			((Fragment_Instructions) mPagerAdapter.getRegisteredFragment(1)).data(nextAction);
+			shifterPlusOne[0] = fuzzy.correctGear(speed, shifterPlusOne[0]);
 			((Fragment_Instructions) mPagerAdapter.getRegisteredFragment(1)).shifter(shifterPlusOne[0]);
 			     }});
-			/*if (results[0]) shiftImage.setImageResource(R.drawable.gearnuetral_lit);
-			if (results[1]) shiftImage.setImageResource(R.drawable.gearfirst_lit);
-			if (results[2]) shiftImage.setImageResource(R.drawable.gearsecond_lit);
-			if (results[3]) shiftImage.setImageResource(R.drawable.gearthird_lit);
-			if (results[4]) shiftImage.setImageResource(R.drawable.gearforth_lit);
-			if (results[5]) shiftImage.setImageResource(R.drawable.gearfifth_lit);
-			if (results[6]) shiftImage.setImageResource(R.drawable.gearsixth_lit);*/
 		}
-	}
-
-	@Override
-	public void onInit(int status) {
-		// TODO Auto-generated method stub
-		
 	}
 }
