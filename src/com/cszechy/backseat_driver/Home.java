@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.openxc.VehicleManager;
+import com.openxc.measurements.BrakePedalStatus.BrakePosition;
 
 public class Home extends ActionBarActivity implements ActionBar.TabListener {
 	private ViewPager mPager;
@@ -141,6 +142,7 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
 			nextAction = shifter.getNextDirection();
 			return shifter.getShifter();
 		}
+
 		protected void onProgressUpdate(Boolean...progress) {
 			ImageView accelImage = (ImageView)findViewById(R.id.accelerator);
 			ImageView brakeImage = (ImageView)findViewById(R.id.brake);

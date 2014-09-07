@@ -8,6 +8,7 @@ import android.util.Log;
 import com.openxc.VehicleManager;
 import com.openxc.measurements.AcceleratorPedalPosition;
 import com.openxc.measurements.BrakePedalStatus;
+import com.openxc.measurements.BrakePedalStatus.BrakePosition;
 import com.openxc.measurements.EngineSpeed;
 import com.openxc.measurements.IgnitionStatus;
 import com.openxc.measurements.Measurement;
@@ -27,10 +28,10 @@ public class VehicleConnection implements ServiceConnection {
 	private VehicleManager mVehicleManager = null;
 	private double accelPedalPos = 0;
 	private boolean clutchPedalPos = false;
-	private boolean brake = false;
+	private BrakePedalStatus.BrakePosition brake = BrakePedalStatus.BrakePosition.IDLE;
 	private double rpm = 0;	//engine speed
 	private double mph = 0;	//vehicle speed
-	private IgnitionStatus.IgnitionPosition igniteStatus = IgnitionStatus.IgnitionPosition.OFF;
+	private IgnitionStatus.IgnitionPosition igniteStatus = IgnitionStatus.IgnitionPosition.IGN_OFF;
 	private boolean parkStatus;
 	private TransmissionGearPosition.GearPosition gearPos = TransmissionGearPosition.GearPosition.NEUTRAL;
 	private TurnSignalStatus.TurnSignalPosition turnSignal = TurnSignalStatus.TurnSignalPosition.OFF;
@@ -54,7 +55,7 @@ public class VehicleConnection implements ServiceConnection {
     	mVehicleManager.addListener(EngineSpeed.class, mRPM);
     	mVehicleManager.addListener(IgnitionStatus.class, mIgnition);
     	mVehicleManager.addListener(ParkingBrakeStatus.class, mParkStatus);
-    	mVehicleManager.addListener(TransmissionGearPosition.class, mGear);
+    	//mVehicleManager.addListener(TransmissionGearPosition.class, mGear);
     	mVehicleManager.addListener(TurnSignalStatus.class, mSignal);
         mVehicleManager.addListener(VehicleSpeed.class, mSpeed);
     } catch (VehicleServiceException e) {
@@ -77,7 +78,7 @@ public class VehicleConnection implements ServiceConnection {
         	mVehicleManager.removeListener(EngineSpeed.class, mRPM);
         	mVehicleManager.removeListener(IgnitionStatus.class, mIgnition);
         	mVehicleManager.removeListener(ParkingBrakeStatus.class, mParkStatus);
-			mVehicleManager.removeListener(TransmissionGearPosition.class, mGear);
+			//mVehicleManager.removeListener(TransmissionGearPosition.class, mGear);
 			mVehicleManager.removeListener(TurnSignalStatus.class, mSignal);
 	        mVehicleManager.removeListener(VehicleSpeed.class, mSpeed);
 		} catch (VehicleServiceException e) {
@@ -94,7 +95,7 @@ public class VehicleConnection implements ServiceConnection {
         	mVehicleManager.addListener(EngineSpeed.class, mRPM);
         	mVehicleManager.addListener(IgnitionStatus.class, mIgnition);
         	mVehicleManager.addListener(ParkingBrakeStatus.class, mParkStatus);
-        	mVehicleManager.addListener(TransmissionGearPosition.class, mGear);
+        	//mVehicleManager.addListener(TransmissionGearPosition.class, mGear);
 			mVehicleManager.addListener(TurnSignalStatus.class, mSignal);
 			mVehicleManager.addListener(VehicleSpeed.class, mSpeed);
 		} catch (VehicleServiceException e) {
@@ -120,7 +121,7 @@ public class VehicleConnection implements ServiceConnection {
 		Log.d("EngineSpeed", "RPM: " + rpm);
 		Log.d("IgnitionStatus", "status: " + igniteStatus);
 		Log.d("ParkingBrakeStatus", "parkStatus: " + parkStatus);
-		Log.d("TransmissionGearPosition", "gearPosition: " + gearPos);
+		//Log.d("TransmissionGearPosition", "gearPosition: " + gearPos);
 		Log.d("TurnSignalStatus", "signalStatus: " + turnSignal);
 		Log.d("VehicleSpeed", "speed: " + mph);
 	}
@@ -162,13 +163,13 @@ public class VehicleConnection implements ServiceConnection {
 			VehicleConnection.this.parkStatus = status.getValue().booleanValue();
 		}
 	};
-	private TransmissionGearPosition.Listener mGear = new TransmissionGearPosition.Listener() {
+	/*private TransmissionGearPosition.Listener mGear = new TransmissionGearPosition.Listener() {
 		@Override
 		public void receive(Measurement measurement) {
 			TransmissionGearPosition gearPosition = (TransmissionGearPosition) measurement;
 			VehicleConnection.this.gearPos = gearPosition.getValue().enumValue();
 		}
-	};
+	};*/
 	private TurnSignalStatus.Listener mSignal = new TurnSignalStatus.Listener() {
 		@Override
 		public void receive(Measurement measurement) {
@@ -187,12 +188,12 @@ public class VehicleConnection implements ServiceConnection {
 		@Override
 		public void receive(Measurement measurement) {
 			BrakePedalStatus brakePedal = (BrakePedalStatus)measurement;
-			VehicleConnection.this.brake = brakePedal.getValue().booleanValue();
+			VehicleConnection.this.brake = brakePedal.getValue().enumValue();
 		}
 	};
 	
 	public CarDataPacket getAllData() {
 		return new CarDataPacket(accelPedalPos, clutchPedalPos, brake, rpm, igniteStatus, 
-				parkStatus, gearPos, turnSignal, mph);
+				parkStatus, TransmissionGearPosition.GearPosition.NEUTRAL, turnSignal, mph);
 	}
 }
