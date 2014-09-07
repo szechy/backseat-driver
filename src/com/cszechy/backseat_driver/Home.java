@@ -1,5 +1,6 @@
 package com.cszechy.backseat_driver;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -14,6 +15,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -63,7 +65,11 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
 		mPager.setOffscreenPageLimit(3);
 		
 		mPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() { 
-		    public void onPageSelected(int position) { actionBar.setSelectedNavigationItem(position); }
+		    public void onPageSelected(int position) { 
+		    	actionBar.setSelectedNavigationItem(position);
+		    	if (position==1)
+		    		startRepeatingTask();
+		    }
 		    public void onPageScrolled(int arg0, float arg1, int arg2) { }
 		    public void onPageScrollStateChanged(int arg0) { }
 		});
@@ -114,10 +120,11 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
             unbindService(mConnection);
             mConnection.setVehicleManager(null);
         }
+        stopRepeatingTask();
     }
     
     private final static int INTERVAL = 500; //500ms
-    Handler mHandler;
+    Handler mHandler = new Handler();
 
     Runnable mHandlerTask = new Runnable() {
          @Override 
@@ -133,13 +140,19 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
 	
     private class Listen extends AsyncTask <Void, Boolean, boolean[]> {
 		private String nextAction;
+		private boolean accel, brake, clutch;
+		
 		@Override
 		protected boolean[] doInBackground(Void...params) {
 			CarDataPacket cardata = mConnection.getAllData();
 			ShiftingLogic shifter = new ShiftingLogic(cardata);
+			shifter.printParams();
 			shifter.determineAction();
-			publishProgress(shifter.getAccelerator(),shifter.getBrake(),shifter.getClutch());
+			accel = shifter.getAccelerator();
+			brake = shifter.getBrake();
+			clutch = shifter.getClutch();
 			nextAction = shifter.getNextDirection();
+			
 			return shifter.getShifter();
 		}
 
@@ -147,18 +160,17 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
 			ImageView accelImage = (ImageView)findViewById(R.id.accelerator);
 			ImageView brakeImage = (ImageView)findViewById(R.id.brake);
 			ImageView clutchImage = (ImageView)findViewById(R.id.clutch);
-			if (progress[0]) accelImage.setImageResource(R.drawable.gas_activated);
+			if (accel) accelImage.setImageResource(R.drawable.gas_activated);
 			else accelImage.setImageResource(R.drawable.gas);
-			if (progress[1]) brakeImage.setImageResource(R.drawable.clutch_activated);
+			if (brake) brakeImage.setImageResource(R.drawable.clutch_activated);
 			else brakeImage.setImageResource(R.drawable.clutch);
-			if (progress[2]) clutchImage.setImageResource(R.drawable.clutch_activated);
+			if (clutch) clutchImage.setImageResource(R.drawable.clutch_activated);
 			else clutchImage.setImageResource(R.drawable.clutch);
 		}
 		
 		@Override
 		protected void onPostExecute(boolean[] results) { 
-			TextView nextActionTV = (TextView)findViewById(R.id.nextAction);
-			nextActionTV.setText(nextAction);
+			((Fragment_Instructions) mPagerAdapter.getRegisteredFragment(1)).data(nextAction);
 			ImageView shiftImage = (ImageView)findViewById(R.id.shifter);
 			if (results[0]) shiftImage.setImageResource(R.drawable.gearnuetral_lit);
 			if (results[1]) shiftImage.setImageResource(R.drawable.gearfirst_lit);

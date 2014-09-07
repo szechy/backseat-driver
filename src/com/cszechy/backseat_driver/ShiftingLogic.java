@@ -1,5 +1,7 @@
 package com.cszechy.backseat_driver;
 
+import android.util.Log;
+
 import com.openxc.measurements.TransmissionGearPosition;
 
 
@@ -184,4 +186,13 @@ public class ShiftingLogic {
 	public boolean getClutch() { return this.clutch; }
 	public boolean getAccelerator() { return this.accelerator; }
 	public boolean getBrake() { return this.brake; }
+	
+	public void printParams() {
+		Log.d("brake", "" + cardata.getBrake());
+		Log.d("acceleration pedal", "" + cardata.getAccelPedalPos());
+		Log.d("clutch", "" + cardata.getClutchPedalPos());
+		Log.d("engine speed", "" + cardata.getRPM());
+		Log.d("nextAction", "" + nextAction);
+		Log.d("road speed", "" + cardata.getMPH());
+	}
 }
