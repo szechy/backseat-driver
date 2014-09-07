@@ -47,7 +47,7 @@ public class Fragment_Map extends Fragment {
 	    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 12.0f));
 	}
 	
-	public void calcRoute(View view) {
+	public void calcRoute() {
 		mMap.setMyLocationEnabled(true);
 		TextView loc = (TextView)getActivity().findViewById(R.id.loc);
 		double[] data = getLatLng(loc.getText().toString());

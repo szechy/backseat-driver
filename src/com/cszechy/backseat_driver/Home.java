@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.TextToSpeech.OnInitListener;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
@@ -22,7 +24,8 @@ import android.widget.TextView;
 import com.openxc.VehicleManager;
 import com.openxc.measurements.BrakePedalStatus.BrakePosition;
 
-public class Home extends ActionBarActivity implements ActionBar.TabListener {
+public class Home extends ActionBarActivity implements ActionBar.TabListener, OnInitListener {
+	private TextToSpeech tts;
 	private ViewPager mPager;
 	private Adapter_TabsPager mPagerAdapter;
 	private ActionBar actionBar;
@@ -164,6 +167,10 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
 			int[] shifterPlusOne = {shifter.getShifter(), 1};
 			return shifterPlusOne;
 		}
+		
+		public void calcRoute(View view) {
+			((Fragment_Map)mPagerAdapter.getRegisteredFragment(2)).calcRoute();
+		}
 
 		protected void onProgressUpdate(boolean... progress) {
 			Log.d("Accel, Brake, Clutch", "" + accel + ", " + brake + ", " + clutch);
@@ -193,5 +200,11 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
 			if (results[5]) shiftImage.setImageResource(R.drawable.gearfifth_lit);
 			if (results[6]) shiftImage.setImageResource(R.drawable.gearsixth_lit);*/
 		}
+	}
+
+	@Override
+	public void onInit(int status) {
+		// TODO Auto-generated method stub
+		
 	}
 }
